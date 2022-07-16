@@ -23,6 +23,7 @@ public class PollenClientForgeEvents {
 
     private static final FogEvents.FogContext FOG_CONTEXT = new FogContextImpl();
 
+    // TickEvents
     @SubscribeEvent
     public static void onEvent(net.minecraftforge.event.TickEvent.ClientTickEvent event) {
         switch (event.phase) {
@@ -35,6 +36,7 @@ public class PollenClientForgeEvents {
         }
     }
 
+    // ClientNetworkEvents
     @SubscribeEvent
     public static void onEvent(ClientPlayerNetworkEvent.LoggedInEvent event) {
         ClientNetworkEvents.LOGIN.invoker().login(event.getController(), event.getPlayer(), event.getNetworkManager());
@@ -50,6 +52,7 @@ public class PollenClientForgeEvents {
         ClientNetworkEvents.RESPAWN.invoker().respawn(event.getController(), event.getOldPlayer(), event.getPlayer(), event.getNetworkManager());
     }
 
+    // InputEvents
     @SubscribeEvent
     public static void onEvent(net.minecraftforge.client.event.GuiScreenEvent.MouseScrollEvent.Pre event) {
         MouseHandler mouseHandler = Minecraft.getInstance().mouseHandler;
@@ -80,6 +83,7 @@ public class PollenClientForgeEvents {
         InputEvents.KEY_INPUT_EVENT.invoker().keyInput(event.getKey(), event.getScanCode(), event.getAction(), event.getModifiers());
     }
 
+    // FogEvents
     @SubscribeEvent
     public static void onEvent(EntityViewRenderEvent.FogColors event) {
         FogEvents.FOG_COLOR.invoker().setupFogColors(event.getRenderer(), event.getInfo(), new FogColorContextImpl(event), (float) event.getRenderPartialTicks());
