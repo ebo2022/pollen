@@ -37,6 +37,7 @@ import org.jetbrains.annotations.ApiStatus;
 @Mod.EventBusSubscriber(modid = Pollen.MOD_ID)
 public class PollenCommonForgeEvents {
 
+    // TickEvents
     @SubscribeEvent
     public static void onEvent(net.minecraftforge.event.TickEvent.ServerTickEvent event) {
         switch (event.phase) {
@@ -67,6 +68,7 @@ public class PollenCommonForgeEvents {
             event.setCanceled(true);
     }
 
+    // ServerLifecycleEvents
     @SubscribeEvent
     public static void onEvent(FMLServerAboutToStartEvent event) {
         if (!ServerLifecycleEvents.PRE_STARTING.invoker().preStarting(event.getServer()))
@@ -94,11 +96,13 @@ public class PollenCommonForgeEvents {
         ServerLifecycleEvents.STOPPED.invoker().stopped(event.getServer());
     }
 
+    // CommandRegistryEvent
     @SubscribeEvent
     public static void onEvent(RegisterCommandsEvent event) {
         CommandRegistryEvent.EVENT.invoker().registerCommands(event.getDispatcher(), event.getEnvironment());
     }
 
+    // PlayerInteractionEvents
     @SubscribeEvent
     public static void onEvent(net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickItem event) {
         InteractionResultHolder<ItemStack> result = PlayerInteractionEvents.RIGHT_CLICK_ITEM.invoker().interaction(event.getPlayer(), event.getWorld(), event.getHand());
@@ -128,13 +132,14 @@ public class PollenCommonForgeEvents {
 
     @SubscribeEvent
     public static void onEvent(net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract event) {
-        InteractionResult result = PlayerInteractionEvents.RIGHT_CLICK_ENTITY.invoker().interaction(event.getPlayer(), event.getWorld(), event.getHand(), event.getEntity());
+        InteractionResult result = PlayerInteractionEvents.RIGHT_CLICK_ENTITY.invoker().interaction(event.getPlayer(), event.getWorld(), event.getHand(), event.getTarget());
         if (result != InteractionResult.PASS) {
             event.setCanceled(true);
             event.setCancellationResult(result);
         }
     }
 
+    // ChunkEvents
     @SubscribeEvent
     public static void onEvent(net.minecraftforge.event.world.ChunkEvent.Load event) {
         ChunkEvents.LOAD.invoker().load(event.getWorld(), event.getChunk());
@@ -145,6 +150,7 @@ public class PollenCommonForgeEvents {
         ChunkEvents.UNLOAD.invoker().unload(event.getWorld(), event.getChunk());
     }
 
+    // ServerPlayerTrackingEvents
     @SubscribeEvent
     public static void onEvent(net.minecraftforge.event.entity.player.PlayerEvent.StartTracking event) {
         ServerPlayerTrackingEvents.START_TRACKING_ENTITY.invoker().startTracking(event.getPlayer(), event.getEntity());
@@ -155,11 +161,13 @@ public class PollenCommonForgeEvents {
         ServerPlayerTrackingEvents.STOP_TRACKING_ENTITY.invoker().stopTracking(event.getPlayer(), event.getEntity());
     }
 
+    // SetTargetEvent
     @SubscribeEvent
     public static void onEvent(net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent event) {
         SetTargetEvent.EVENT.invoker().setTarget(event.getEntityLiving(), event.getTarget());
     }
 
+    // ExplosionEvents
     @SubscribeEvent
     public static void onEvent(net.minecraftforge.event.world.ExplosionEvent.Start event) {
         if (!ExplosionEvents.START.invoker().start(event.getWorld(), event.getExplosion()))
@@ -171,6 +179,7 @@ public class PollenCommonForgeEvents {
         ExplosionEvents.DETONATE.invoker().detonate(event.getWorld(), event.getExplosion(), event.getAffectedEntities());
     }
 
+    // EntityEvents
     @SubscribeEvent
     public static void onEvent(net.minecraftforge.event.entity.EntityJoinWorldEvent event) {
         if (!EntityEvents.JOIN.invoker().onJoin(event.getEntity(), event.getWorld()))
@@ -182,6 +191,7 @@ public class PollenCommonForgeEvents {
         EntityEvents.LEAVE.invoker().onLeave(event.getEntity(), event.getWorld());
     }
 
+    // ModifyTradesEvents
     @SubscribeEvent
     public static void onEvent(net.minecraftforge.event.village.VillagerTradesEvent event) {
         Int2ObjectMap<ModifyTradesEvents.TradeRegistry> newTrades = new Int2ObjectOpenHashMap<>();
@@ -234,6 +244,7 @@ public class PollenCommonForgeEvents {
         event.getRareTrades().addAll(rare);
     }
 
+    // ContainerEvents
     @SubscribeEvent
     public static void onEvent(PlayerContainerEvent.Open event) {
         ContainerEvents.OPEN.invoker().open(event.getPlayer(), event.getContainer());
@@ -244,6 +255,7 @@ public class PollenCommonForgeEvents {
         ContainerEvents.CLOSE.invoker().close(event.getPlayer(), event.getContainer());
     }
 
+    // LootTableConstructingEvent
     @SubscribeEvent
     public static void onEvent(LootTableLoadEvent event) {
         LootTableConstructingEvent.Context context = new LootTableConstructingEvent.Context(event.getName(), event.getTable());

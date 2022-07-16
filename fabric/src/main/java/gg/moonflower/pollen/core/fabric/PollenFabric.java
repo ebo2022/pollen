@@ -41,7 +41,7 @@ public class PollenFabric implements ModInitializer {
 
     private static final LevelResource SERVERCONFIG = LevelResourceAccessor.init("serverconfig");
 
-    private static Path getServerConfigPath(MinecraftServer server) {
+    public static Path getServerConfigPath(MinecraftServer server) {
         Path serverConfig = server.getWorldPath(SERVERCONFIG);
         if (!Files.isDirectory(serverConfig)) {
             try {
@@ -64,40 +64,6 @@ public class PollenFabric implements ModInitializer {
 
         Pollen.PLATFORM.setup();
 
-        ServerTickEvents.START_SERVER_TICK.register(level -> TickEvents.SERVER_PRE.invoker().tick());
-        ServerTickEvents.END_SERVER_TICK.register(level -> TickEvents.SERVER_POST.invoker().tick());
-        ServerTickEvents.START_WORLD_TICK.register(level -> TickEvents.LEVEL_PRE.invoker().tick(level));
-        ServerTickEvents.END_WORLD_TICK.register(level -> TickEvents.LEVEL_POST.invoker().tick(level));
-
-        net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.SERVER_STOPPING.register(server -> ServerLifecycleEvents.STOPPING.invoker().stopping(server));
-        net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.SERVER_STOPPED.register(server -> ServerLifecycleEvents.STOPPED.invoker().stopped(server));
-
-        ServerChunkEvents.CHUNK_LOAD.register((level, chunk)->ChunkEvents.LOAD.invoker().load(level, chunk));
-        ServerChunkEvents.CHUNK_UNLOAD.register((level, chunk)->ChunkEvents.UNLOAD.invoker().unload(level, chunk));
-
-        UseItemCallback.EVENT.register((player, level, hand) -> PlayerInteractionEvents.RIGHT_CLICK_ITEM.invoker().interaction(player, level, hand));
-        UseBlockCallback.EVENT.register((player, level, hand, result) -> PlayerInteractionEvents.RIGHT_CLICK_BLOCK.invoker().interaction(player, level, hand, result));
-        AttackBlockCallback.EVENT.register((player, level, hand, pos, direction) -> PlayerInteractionEvents.LEFT_CLICK_BLOCK.invoker().interaction(player, level, hand, pos, direction));
-        UseEntityCallback.EVENT.register((player, world, hand, entity, entityHitResult) -> PlayerInteractionEvents.RIGHT_CLICK_ENTITY.invoker().interaction(player, world, hand, entity));
-
-        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> CommandRegistryEvent.EVENT.invoker().registerCommands(dispatcher, dedicated ? Commands.CommandSelection.DEDICATED : Platform.getRunningServer().isPresent() ? Commands.CommandSelection.INTEGRATED : Commands.CommandSelection.ALL));
-
-        EntityTrackingEvents.START_TRACKING.register((entity, player) -> ServerPlayerTrackingEvents.START_TRACKING_ENTITY.invoker().startTracking(player, entity));
-        EntityTrackingEvents.STOP_TRACKING.register((entity, player) -> ServerPlayerTrackingEvents.STOP_TRACKING_ENTITY.invoker().stopTracking(player, entity));
-
-        LootTableLoadingCallback.EVENT.register((resourceManager, manager, id, supplier, setter) -> {
-            LootTableConstructingEvent.Context context = new LootTableConstructingEvent.Context(id, supplier.build());
-            LootTableConstructingEvent.EVENT.invoker().modifyLootTable(context);
-            setter.set(context.apply());
-        });
-
-        // Pollen Events
-        ServerLifecycleEvents.PRE_STARTING.register(server -> {
-            ConfigTracker.INSTANCE.loadConfigs(PollinatedConfigType.SERVER, getServerConfigPath(server));
-            VillagerTradeManager.init();
-            return true;
-        });
-        ServerLifecycleEvents.STOPPED.register(server -> ConfigTracker.INSTANCE.unloadConfigs(PollinatedConfigType.SERVER, getServerConfigPath(server)));
-        CommandRegistryEvent.EVENT.register((dispatcher, selection) -> ConfigCommand.register(dispatcher, selection == Commands.CommandSelection.DEDICATED));
+        PollenFabricEvents.init();
     }
 }

@@ -1,12 +1,16 @@
 package gg.moonflower.pollen.api.registry;
 
+import gg.moonflower.pollen.api.event.EventResult;
 import gg.moonflower.pollen.api.event.PollinatedEvent;
+import gg.moonflower.pollen.api.event.actors.InteractionResultActor;
+import gg.moonflower.pollen.api.event.actors.ResultActor;
 import gg.moonflower.pollen.core.event.PollinatedEventImpl;
 import net.minecraft.world.InteractionResult;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -44,7 +48,17 @@ public final class EventRegistry {
     }
 
     @SuppressWarnings({"unchecked", "SuspiciousInvocationHandlerImplementation"})
-    public static <T> PollinatedEvent<T> createResult(Class<? super T> type) {
+    public static <T> PollinatedEvent<Consumer<T>> createLoopActor(Class<T> type) {
+        return create(Consumer.class, events -> (Consumer<T>) Proxy.newProxyInstance(EventRegistry.class.getClassLoader(), new Class[]{Consumer.class}, (proxy, method, args) -> {
+            for (Object event : events) {
+                invokeFast(event, method, args);
+            }
+            return null;
+        }));
+    }
+
+    @SuppressWarnings({"unchecked", "SuspiciousInvocationHandlerImplementation"})
+    public static <T> PollinatedEvent<T> createInteractionResult(Class<? super T> type) {
         return create(type, events -> (T) Proxy.newProxyInstance(EventRegistry.class.getClassLoader(), new Class[]{type}, (proxy, method, args) -> {
             for (Object event : events) {
                 InteractionResult result = invokeFast(event, method, args);
@@ -53,6 +67,45 @@ public final class EventRegistry {
                 }
             }
             return InteractionResult.PASS;
+        }));
+    }
+
+    @SuppressWarnings({"unchecked", "SuspiciousInvocationHandlerImplementation"})
+    public static <T> PollinatedEvent<InteractionResultActor<T>> createInteractionResultActor(Class<? super T> type) {
+        return create(InteractionResultActor.class, events -> (InteractionResultActor<T>) Proxy.newProxyInstance(EventRegistry.class.getClassLoader(), new Class[]{InteractionResultActor.class}, (proxy, method, args) -> {
+            for (Object event : events) {
+                InteractionResult result = invokeFast(event, method, args);
+                if (result != InteractionResult.PASS) {
+                    return result;
+                }
+            }
+            return InteractionResult.PASS;
+        }));
+    }
+
+    @SuppressWarnings({"unchecked", "SuspiciousInvocationHandlerImplementation"})
+    public static <T> PollinatedEvent<T> createResult(Class<? super T> type) {
+        return create(type, events -> (T) Proxy.newProxyInstance(EventRegistry.class.getClassLoader(), new Class[]{type}, (proxy, method, args) -> {
+            for (Object event : events) {
+                EventResult result = invokeFast(event, method, args);
+                if (result.preventsProcessing()) {
+                    return result;
+                }
+            }
+            return EventResult.PASS;
+        }));
+    }
+
+    @SuppressWarnings({"unchecked", "SuspiciousInvocationHandlerImplementation"})
+    public static <T> PollinatedEvent<ResultActor<T>> createResultActor(Class<? super T> type) {
+        return create(ResultActor.class, events -> (ResultActor<T>) Proxy.newProxyInstance(EventRegistry.class.getClassLoader(), new Class[]{ResultActor.class}, (proxy, method, args) -> {
+            for (Object event : events) {
+                EventResult result = invokeFast(event, method, args);
+                if (result.preventsProcessing()) {
+                    return result;
+                }
+            }
+            return EventResult.PASS;
         }));
     }
 
