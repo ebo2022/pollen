@@ -13,6 +13,6 @@ public class MobMixin {
 
     @Inject(method = "setTarget", at = @At("TAIL"))
     public void setTarget(LivingEntity livingEntity, CallbackInfo ci) {
-        SetTargetEvent.EVENT.invoker().setTarget((LivingEntity) (Object) this, livingEntity);
+        SetTargetEvent.EVENT.invoker().accept(new SetTargetEvent((LivingEntity) (Object) this, livingEntity));
     }
 }

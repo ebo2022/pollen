@@ -164,7 +164,7 @@ public class PollenCommonForgeEvents {
     // SetTargetEvent
     @SubscribeEvent
     public static void onEvent(net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent event) {
-        SetTargetEvent.EVENT.invoker().setTarget(event.getEntityLiving(), event.getTarget());
+        SetTargetEvent.EVENT.invoker().accept(new SetTargetEvent(event.getEntityLiving(), event.getTarget()));
     }
 
     // ExplosionEvents
