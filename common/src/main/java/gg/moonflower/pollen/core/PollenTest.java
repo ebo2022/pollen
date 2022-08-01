@@ -14,10 +14,7 @@ import gg.moonflower.pollen.api.registry.FluidBehaviorRegistry;
 import gg.moonflower.pollen.api.registry.PollinatedBlockRegistry;
 import gg.moonflower.pollen.api.registry.PollinatedFluidRegistry;
 import gg.moonflower.pollen.api.registry.PollinatedRegistry;
-import gg.moonflower.pollen.api.registry.content.CompostablesRegistry;
-import gg.moonflower.pollen.api.registry.content.DispenseItemBehaviorRegistry;
-import gg.moonflower.pollen.api.registry.content.FlammabilityRegistry;
-import gg.moonflower.pollen.api.registry.content.FurnaceFuelRegistry;
+import gg.moonflower.pollen.api.registry.content.*;
 import gg.moonflower.pollen.api.registry.resource.TagRegistry;
 import gg.moonflower.pollen.core.client.render.DebugPollenFlowerPotRenderer;
 import gg.moonflower.pollen.core.test.TestFluid;
@@ -53,19 +50,15 @@ public class PollenTest {
     private static final PollinatedRegistry<Item> ITEMS = create(() -> PollinatedRegistry.create(Registry.ITEM, Pollen.MOD_ID));
     private static final PollinatedBlockRegistry BLOCKS = create(() -> PollinatedRegistry.createBlock(ITEMS));
     private static final PollinatedFluidRegistry FLUIDS = create(() -> PollinatedRegistry.createFluid(Pollen.MOD_ID));
-    private static final PollinatedRegistry<PollinatedBoatType> BOATS = create(() -> PollinatedRegistry.create(PollenRegistries.BOAT_TYPE_REGISTRY, Pollen.MOD_ID));
 
     public static final TagKey<Fluid> TEST_TAG = create(() -> TagRegistry.bindFluid(new ResourceLocation(Pollen.MOD_ID, "test")));
 
-    public static final Supplier<PollinatedBoatType> TEST_BOAT = create(() -> Objects.requireNonNull(BOATS).register("test_boat", () -> new PollinatedBoatType(new ResourceLocation("textures/entity/ghast/ghast.png"), new ResourceLocation("textures/entity/ghast/ghast_shooting.png"))));
     public static final Supplier<FlowingFluid> TEST_FLUID = create(() -> Objects.requireNonNull(FLUIDS).register("test", TestFluid.Source::new));
     public static final Supplier<FlowingFluid> FLOWING_TEST_FLUID = create(() -> Objects.requireNonNull(FLUIDS).register("flowing_test", TestFluid.Flowing::new));
     public static final Supplier<Block> TEST = create(() -> Objects.requireNonNull(BLOCKS).register("test", () -> new PollinatedLiquidBlock(TEST_FLUID, BlockBehaviour.Properties.of(Material.WATER).noCollission().strength(100.0F).noLootTable())));
     public static final Supplier<Item> TEST_BUCKET = create(() -> Objects.requireNonNull(ITEMS).register("test", () -> new BucketItemBase(TEST_FLUID, new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1).tab(CreativeModeTab.TAB_MISC))));
     public static final Supplier<Item> TEST_SPAWN_EGG = create(() -> Objects.requireNonNull(ITEMS).register("test_spawn_egg", () -> new SpawnEggItemBase<>(() -> EntityType.IRON_GOLEM, 0, 0, new Item.Properties().tab(CreativeModeTab.TAB_MISC))));
 
-    public static final Supplier<Item> TEST_BOAT_ITEM = create(() -> Objects.requireNonNull(ITEMS).register("test_boat", () -> new PollinatedBoatItem(Objects.requireNonNull(TEST_BOAT), false, new Item.Properties().stacksTo(1).tab(CreativeModeTab.TAB_TRANSPORTATION))));
-    public static final Supplier<Item> TEST_CHEST_BOAT_ITEM = create(() -> Objects.requireNonNull(ITEMS).register("test_chest_boat", () -> new PollinatedBoatItem(Objects.requireNonNull(TEST_BOAT), true, new Item.Properties().stacksTo(1).tab(CreativeModeTab.TAB_TRANSPORTATION))));
 
     public static final Pair<Supplier<PollinatedStandingSignBlock>, Supplier<PollinatedWallSignBlock>> TEST_SIGN = create(() -> Objects.requireNonNull(BLOCKS).registerSign("test", Material.WOOD, MaterialColor.COLOR_BLUE));
 
@@ -77,7 +70,6 @@ public class PollenTest {
         Objects.requireNonNull(ITEMS).register(Pollen.PLATFORM);
         Objects.requireNonNull(BLOCKS).register(Pollen.PLATFORM);
         Objects.requireNonNull(FLUIDS).register(Pollen.PLATFORM);
-        Objects.requireNonNull(BOATS).register(Pollen.PLATFORM);
 
         DispenseItemBehaviorRegistry.register(Blocks.DIAMOND_BLOCK, (source, stack) -> source.getLevel().getBlockState(new BlockPos(DispenserBlock.getDispensePosition(source))).getBlock() == Blocks.GOLD_BLOCK, new DefaultDispenseItemBehavior() {
             @Override
@@ -107,6 +99,7 @@ public class PollenTest {
         FlammabilityRegistry.register(Blocks.DIAMOND_BLOCK, 200, 50);
         CompostablesRegistry.register(Blocks.SAND, 1);
         FurnaceFuelRegistry.register(Items.BUCKET, 100);
+        ShovelRegistry.register(Blocks.GRAVEL, Blocks.COARSE_DIRT.defaultBlockState());
     }
 
     private static <T> T create(Supplier<T> factory) {
