@@ -2,19 +2,21 @@ package gg.moonflower.pollen.core.forge;
 
 import gg.moonflower.pollen.api.event.events.client.render.AddRenderLayersEvent;
 import gg.moonflower.pollen.api.event.events.client.render.InitRendererEvent;
+import gg.moonflower.pollen.api.event.events.registry.RegisterDataAttachmentsEvent;
 import gg.moonflower.pollen.api.event.events.registry.client.ParticleFactoryRegistryEvent;
 import gg.moonflower.pollen.api.event.events.registry.client.RegisterAtlasSpriteEvent;
+import gg.moonflower.pollen.api.registry.RegistryDataAttachment;
 import gg.moonflower.pollen.api.registry.client.ShaderRegistry;
+import gg.moonflower.pollen.api.util.RegistryHelper;
 import gg.moonflower.pollen.core.Pollen;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.EntityModelSet;
-import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.world.entity.EntityType;
@@ -27,6 +29,7 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.DataPackRegistriesHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.ApiStatus;
@@ -41,6 +44,7 @@ public class PollenForge {
 
     public PollenForge() {
         Pollen.PLATFORM.setup();
+        registerDataAttachments();
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         modBus.addListener(PollenForge::init);
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
@@ -104,5 +108,16 @@ public class PollenForge {
                 event.register(type, factory::create);
             }
         });
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
+    private static void registerDataAttachments() {
+       RegisterDataAttachmentsEvent.EVENT.invoker().registerAttachments(new RegisterDataAttachmentsEvent.Registry() {
+           @Override
+           public <T> void register(RegistryDataAttachment<T> attachment) {
+               DataPackRegistriesHooks.addRegistryCodec(new RegistryAccess.RegistryData<>(attachment.key(), attachment.codec(), null));
+               RegistryHelper.injectBuiltinRegistry(attachment.vanillaRegistry());
+           }
+       });
     }
 }
