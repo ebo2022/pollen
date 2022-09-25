@@ -35,6 +35,7 @@
   ],
   "mixins": [
     "AxeItemMixin",
+    "BuiltinRegistriesAccessor",
     "DedicatedServerMixin",
     "ExplosionMixin",
     "LevelChunkMixin",
