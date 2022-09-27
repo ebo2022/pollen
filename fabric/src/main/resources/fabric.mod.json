@@ -42,6 +42,9 @@
     ],
     "jei_mod_plugin": [
       "gg.moonflower.pollen.core.compat.jei.PollenJeiPlugin"
+    ],
+    "pollen-data-registry-loader": [
+      "gg.moonflower.pollen.core.fabric.PollenFabricDataRegistryLoader"
     ]
   },
   "depends": {

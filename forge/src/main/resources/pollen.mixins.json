@@ -8,9 +8,7 @@
     "client.CreateWorldScreenMixin",
     "client.LevelRendererMixin",
     "client.LevelRendererVanillaMixin",
-    "client.LiquidBlockRendererMixin",
     "client.OptionsMixin",
-    "client.RecipeManagerAccessor",
     "client.RenderSystemMixin"
   ],
   "mixins": [
@@ -22,7 +20,6 @@
     "ForgeHooksMixin",
     "ForgeInternalHandlerMixin",
     "HandshakeHandlerMixin",
-    "LivingEntityMixin",
     "PackRepositoryAccessor",
     "PackRepositoryMixin",
     "data.AdvancementBuilderMixin",

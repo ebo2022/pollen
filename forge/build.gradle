@@ -51,11 +51,11 @@ dependencies {
     forgeRuntimeLibrary implementation("com.github.Ocelot5836:molang-compiler:${project.molang_compiler_version}")
     shadowCommon "com.github.Ocelot5836:molang-compiler:${project.molang_compiler_version}"
 
-    modRuntimeOnly "me.djtheredstoner:DevAuth-forge-latest:${rootProject.devauth_version}"
-    modRuntimeOnly "curse.maven:configured-457570:3559398"
-    modRuntimeOnly "curse.maven:catalogue-459701:3559402"
+    //modRuntimeOnly "me.djtheredstoner:DevAuth-forge-latest:${rootProject.devauth_version}"
+    //modRuntimeOnly "curse.maven:configured-457570:3559398"
+    //modRuntimeOnly "curse.maven:catalogue-459701:3559402"
 
-    modRuntimeOnly "mezz.jei:jei-${rootProject.minecraft_version}-forge:${rootProject.jei_version}"
+    //modRuntimeOnly "mezz.jei:jei-${rootProject.minecraft_version}-forge:${rootProject.jei_version}"
 
     forgeRuntimeLibrary "com.github.LlamaLad7:MixinExtras:${rootProject.mixin_extras_version}"
     annotationProcessor "com.github.LlamaLad7:MixinExtras:${rootProject.mixin_extras_version}"

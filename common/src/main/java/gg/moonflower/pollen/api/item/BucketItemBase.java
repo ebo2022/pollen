@@ -1,6 +1,5 @@
 package gg.moonflower.pollen.api.item;
 
-import gg.moonflower.pollen.api.fluid.PollinatedFluid;
 import gg.moonflower.pollen.api.registry.content.DispenseItemBehaviorRegistry;
 import gg.moonflower.pollen.core.mixin.BucketItemAccessor;
 import net.minecraft.advancements.CriteriaTriggers;
@@ -180,11 +179,8 @@ public class BucketItemBase extends BucketItem {
     protected void playEmptySound(@Nullable Player player, LevelAccessor level, BlockPos pos) {
         Fluid content = this.getFluid();
         SoundEvent soundEvent;
-        if (content instanceof PollinatedFluid) {
-            soundEvent = ((PollinatedFluid) content).getEmptySound().orElse(null);
-        } else {
-            soundEvent = content.is(FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
-        }
+        soundEvent = content.is(FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
+
 
         if (soundEvent != null)
             level.playSound(player, pos, soundEvent, SoundSource.BLOCKS, 1.0F, 1.0F);

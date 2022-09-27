@@ -45,6 +45,8 @@
     "MinecraftServerMixin",
     "MobMixin",
     "PlayerListMixin",
+    "RegistryAccessMixin",
+    "RegistryResourceAccessMixin",
     "ServerLevelEntityCallbacksMixin",
     "ServerLevelMixin",
     "ServerLoginPacketListenerImplMixin",

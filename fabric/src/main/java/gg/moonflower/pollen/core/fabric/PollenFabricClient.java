@@ -4,20 +4,13 @@ import gg.moonflower.pollen.api.event.events.client.render.ReloadRendersEvent;
 import gg.moonflower.pollen.api.event.events.entity.EntityEvents;
 import gg.moonflower.pollen.api.event.events.lifecycle.TickEvents;
 import gg.moonflower.pollen.api.event.events.network.ClientNetworkEvents;
-import gg.moonflower.pollen.api.event.events.registry.client.RegisterAtlasSpriteEvent;
 import gg.moonflower.pollen.api.event.events.world.ChunkEvents;
-import gg.moonflower.pollen.api.fluid.PollinatedFluid;
-import gg.moonflower.pollen.api.fluid.fabric.CustomFluidRenderHandler;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.InvalidateRenderStateCallback;
-import net.minecraft.core.Registry;
-import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
@@ -40,21 +33,5 @@ public class PollenFabricClient implements ClientModInitializer {
 
         ClientEntityEvents.ENTITY_LOAD.register((entity, level) -> EntityEvents.JOIN.invoker().onJoin(entity, level));
         ClientEntityEvents.ENTITY_UNLOAD.register((entity, level) -> EntityEvents.LEAVE.invoker().onLeave(entity, level));
-
-        RegisterAtlasSpriteEvent.event(InventoryMenu.BLOCK_ATLAS).register((atlas, registry) -> {
-            for (Fluid fluid : Registry.FLUID) {
-                if (!(fluid instanceof PollinatedFluid))
-                    continue;
-                PollinatedFluid pollinatedFluid = (PollinatedFluid) fluid;
-                registry.accept(pollinatedFluid.getStillTextureName());
-                registry.accept(pollinatedFluid.getFlowingTextureName());
-            }
-        });
-
-        for (Fluid fluid : Registry.FLUID) {
-            if (!(fluid instanceof PollinatedFluid))
-                continue;
-            FluidRenderHandlerRegistry.INSTANCE.register(fluid, new CustomFluidRenderHandler((PollinatedFluid) fluid));
-        }
     }
 }
