@@ -49,3 +49,19 @@ extendable method net/minecraft/tags/TagEntry <init> (Lnet/minecraft/resources/R
 accessible class net/minecraft/client/renderer/chunk/ChunkRenderDispatcher$ChunkTaskResult
 accessible class net/minecraft/client/renderer/chunk/ChunkRenderDispatcher$RenderChunk$RebuildTask
 accessible class net/minecraft/client/renderer/chunk/ChunkRenderDispatcher$RenderChunk$RebuildTask$CompileResults
+
+accessible field net/minecraft/world/level/biome/BiomeSpecialEffects$Builder fogColor Ljava/util/OptionalInt;
+accessible field net/minecraft/world/level/biome/BiomeSpecialEffects$Builder waterColor Ljava/util/OptionalInt;
+accessible field net/minecraft/world/level/biome/BiomeSpecialEffects$Builder waterFogColor Ljava/util/OptionalInt;
+accessible field net/minecraft/world/level/biome/BiomeSpecialEffects$Builder skyColor Ljava/util/OptionalInt;
+accessible field net/minecraft/world/level/biome/BiomeSpecialEffects$Builder foliageColorOverride Ljava/util/Optional;
+accessible field net/minecraft/world/level/biome/BiomeSpecialEffects$Builder grassColorOverride Ljava/util/Optional;
+accessible field net/minecraft/world/level/biome/BiomeSpecialEffects$Builder grassColorModifier Lnet/minecraft/world/level/biome/BiomeSpecialEffects$GrassColorModifier;
+accessible field net/minecraft/world/level/biome/BiomeSpecialEffects$Builder ambientParticle Ljava/util/Optional;
+accessible field net/minecraft/world/level/biome/BiomeSpecialEffects$Builder ambientLoopSoundEvent Ljava/util/Optional;
+accessible field net/minecraft/world/level/biome/BiomeSpecialEffects$Builder ambientMoodSettings Ljava/util/Optional;
+accessible field net/minecraft/world/level/biome/BiomeSpecialEffects$Builder ambientAdditionsSettings Ljava/util/Optional;
+accessible field net/minecraft/world/level/biome/BiomeSpecialEffects$Builder backgroundMusic Ljava/util/Optional;
+accessible field net/minecraft/world/level/biome/BiomeGenerationSettings$Builder features Ljava/util/List;
+accessible field net/minecraft/world/level/biome/MobSpawnSettings$Builder spawners Ljava/util/Map;
+accessible field net/minecraft/world/level/biome/MobSpawnSettings$Builder mobSpawnCosts Ljava/util/Map;

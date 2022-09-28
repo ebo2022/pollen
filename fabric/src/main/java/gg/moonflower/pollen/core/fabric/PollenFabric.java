@@ -18,6 +18,9 @@ import gg.moonflower.pollen.core.command.ConfigCommand;
 import gg.moonflower.pollen.core.mixin.fabric.LevelResourceAccessor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
+import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
+import net.fabricmc.fabric.api.biome.v1.ModificationPhase;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerChunkEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
@@ -30,7 +33,9 @@ import net.fabricmc.fabric.api.loot.v2.LootTableEvents;
 import net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.commands.Commands;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.level.biome.BiomeSpecialEffects;
 import net.minecraft.world.level.storage.LevelResource;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -98,6 +103,7 @@ public class PollenFabric implements ModInitializer {
         // Pollen Events
         ServerLifecycleEvents.PRE_STARTING.register(server -> {
             ConfigTracker.INSTANCE.loadConfigs(PollinatedConfigType.SERVER, getServerConfigPath(server));
+            BiomeModifications.create(new ResourceLocation("pollen", "test")).add(ModificationPhase.ADDITIONS, BiomeSelectors.all(), modificationContext -> modificationContext.getEffects().setGrassColorModifier(BiomeSpecialEffects.GrassColorModifier.SWAMP));
             VillagerTradeManager.init();
             return true;
         });

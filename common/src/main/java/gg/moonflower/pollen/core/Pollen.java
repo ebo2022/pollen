@@ -1,5 +1,7 @@
 package gg.moonflower.pollen.core;
 
+import gg.moonflower.pollen.api.PollenRegistries;
+import gg.moonflower.pollen.api.biome.modification.PollenBiomeModifiers;
 import gg.moonflower.pollen.api.command.PollenSuggestionProviders;
 import gg.moonflower.pollen.api.command.argument.ColorArgumentType;
 import gg.moonflower.pollen.api.command.argument.EnumArgument;
@@ -83,6 +85,8 @@ public class Pollen {
         PollenRecipeTypes.RECIPE_SERIALIZERS.register(PLATFORM);
         PollenRecipeTypes.RECIPES.register(PLATFORM);
         PollenEntityTypes.ENTITY_TYPES.register(PLATFORM);
+        PollenRegistries.BIOME_MODIFIERS.register(PLATFORM);
+        PollenBiomeModifiers.DEFAULT_SERIALIZERS.register(PLATFORM);
         if (TESTS_ENABLED)
             PollenTest.onCommon();
     }
