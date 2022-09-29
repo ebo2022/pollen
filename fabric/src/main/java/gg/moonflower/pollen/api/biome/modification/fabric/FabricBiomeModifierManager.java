@@ -25,12 +25,12 @@ public final class FabricBiomeModifierManager {
     public static void runModifiers(RegistryAccess registryAccess) {
         int modifiersApplied = 0;
         Registry<PollinatedBiomeModifier> modifiers = PollenRegistries.BIOME_MODIFIERS.get(registryAccess);
-        for (ModificationPhase phase : ModificationPhase.values()) {
-            for (Map.Entry<ResourceKey<PollinatedBiomeModifier>, PollinatedBiomeModifier> entry : modifiers.entrySet()) {
+        for (Map.Entry<ResourceKey<PollinatedBiomeModifier>, PollinatedBiomeModifier> entry : modifiers.entrySet()) {
+            for (ModificationPhase phase : ModificationPhase.values()) {
                 ResourceLocation modifierLocation = entry.getKey().location();
                 BiomeModifications.create(modifierLocation).add(phase, selector -> true, (selector, context) -> entry.getValue().apply(selector.getBiomeRegistryEntry(), wrapPhase(phase), new PollinatedBiomeInfoImpl(context)));
-                modifiersApplied++;
             }
+            modifiersApplied++;
         }
         LOGGER.info("Applied " + modifiersApplied + " biome modifiers from server data");
     }

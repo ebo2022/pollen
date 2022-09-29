@@ -41,24 +41,8 @@ public abstract class MinecraftServerMixin {
         ServerLifecycleEvents.STARTED.invoker().started((MinecraftServer) (Object) this);
     }
 
-    @Inject(method = "<init>", at = @At("RETURN"))
-    public void loadPollenModifiers(Thread thread, LevelStorageSource.LevelStorageAccess levelStorageAccess, PackRepository packRepository, WorldStem worldStem, Proxy proxy, DataFixer dataFixer, Services services, ChunkProgressListenerFactory chunkProgressListenerFactory, CallbackInfo ci) {
-        Registry<PollinatedBiomeModifier> modifiers = PollenRegistries.BIOME_MODIFIERS.get(this.registryAccess());
-        for (ModificationPhase phase : ModificationPhase.values()) {
-            for (Map.Entry<ResourceKey<PollinatedBiomeModifier>, PollinatedBiomeModifier> entry : modifiers.entrySet()) {
-                ResourceLocation modifierLocation = entry.getKey().location();
-                BiomeModifications.create(modifierLocation).add(phase, selector -> true, (selector, context) -> entry.getValue().apply(selector.getBiomeRegistryEntry(), wrapPhase(phase), new PollinatedBiomeInfoImpl(context)));
-            }
-        }
-    }
-
-    @Unique
-    private static PollinatedBiomeModifier.Phase wrapPhase(ModificationPhase phase) {
-        return switch (phase) {
-            case ADDITIONS -> PollinatedBiomeModifier.Phase.ADDITIONS;
-            case REMOVALS -> PollinatedBiomeModifier.Phase.REMOVALS;
-            case REPLACEMENTS -> PollinatedBiomeModifier.Phase.REPLACEMENTS;
-            case POST_PROCESSING -> PollinatedBiomeModifier.Phase.POST_PROCESSING;
-        };
+    @Inject(method = "<init>", at = @At(value = "RETURN", shift = At.Shift.BEFORE))
+    public void loadPollenBiomeModifiers(Thread thread, LevelStorageSource.LevelStorageAccess levelStorageAccess, PackRepository packRepository, WorldStem worldStem, Proxy proxy, DataFixer dataFixer, Services services, ChunkProgressListenerFactory chunkProgressListenerFactory, CallbackInfo ci) {
+        FabricBiomeModifierManager.runModifiers(this.registryAccess());
     }
 }
