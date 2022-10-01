@@ -28,11 +28,12 @@ public final class FabricBiomeModifierManager {
         for (Map.Entry<ResourceKey<PollinatedBiomeModifier>, PollinatedBiomeModifier> entry : modifiers.entrySet()) {
             for (ModificationPhase phase : ModificationPhase.values()) {
                 ResourceLocation modifierLocation = entry.getKey().location();
-                BiomeModifications.create(modifierLocation).add(phase, selector -> true, (selector, context) -> entry.getValue().apply(selector.getBiomeRegistryEntry(), wrapPhase(phase), new PollinatedBiomeInfoImpl(context)));
+                PollinatedBiomeModifier modifier = entry.getValue();
+                BiomeModifications.create(modifierLocation).add(phase, selector -> modifier.test(selector.getBiomeRegistryEntry(), wrapPhase(phase)), (selector, context) -> modifier.apply(new PollinatedBiomeInfoImpl(context)));
             }
             modifiersApplied++;
         }
-        LOGGER.info("Applied " + modifiersApplied + " biome modifiers from server data");
+        LOGGER.info("Loaded " + modifiersApplied + " biome modifiers from server data");
     }
 
     private static PollinatedBiomeModifier.Phase wrapPhase(ModificationPhase phase) {

@@ -28,13 +28,20 @@ public interface PollinatedBiomeModifier {
     Codec<? extends PollinatedBiomeModifier> codec();
 
     /**
-     * Applies any changes this modifier makes.
+     * Ran to see if this modifier can be applied given the specified conditions.
      *
-     * @param biome The current biome the modifier is being applied to
+     * @param biome The current biome being tested
      * @param phase The current modification phase
+     * @return Whether the modifier should be applied
+     */
+    boolean test(Holder<Biome> biome, Phase phase);
+
+    /**
+     * Applies any changes this modifier makes if applicable.
+     *
      * @param info  Context to change properties of the biome
      */
-    void apply(Holder<Biome> biome, Phase phase, PollinatedBiomeInfo info);
+    void apply(PollinatedBiomeInfo info);
 
     /**
      * Phases of biome modification.
