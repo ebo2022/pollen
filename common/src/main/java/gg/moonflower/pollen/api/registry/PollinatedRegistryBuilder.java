@@ -1,7 +1,5 @@
 package gg.moonflower.pollen.api.registry;
 
-import com.mojang.serialization.Codec;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * A builder to create a custom {@link PollinatedRegistry}.
@@ -21,25 +19,6 @@ public interface PollinatedRegistryBuilder<T> {
      * Disables syncing the registry to the client.
      */
     PollinatedRegistryBuilder<T> disableSync();
-
-    /**
-     * Enables content to be added to the registry via JSON files in datapacks.
-     * <p>The folder where content is registered from depends on the resource location provided as the registry name.
-     *
-     * @param codec        The codec to deserialize content from JSON
-     * @param networkCodec An optional network codec to sync content between servers and clients
-     */
-    PollinatedRegistryBuilder<T> dataPackRegistry(Codec<T> codec, @Nullable Codec<T> networkCodec);
-
-    /**
-     * Enables content to be added to the registry via JSON files in datapacks.
-     * <p>The folder where content is registered from depends on the resource location provided as the registry name.
-     *
-     * @param codec The codec to deserialize content from JSON
-     */
-    default PollinatedRegistryBuilder<T> dataPackRegistry(Codec<T> codec) {
-        return this.dataPackRegistry(codec, null);
-    }
 
     /**
      * Builds a new {@link PollinatedRegistry} with the specified parameters.

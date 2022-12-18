@@ -35,12 +35,6 @@ public class PollinatedRegistryBuilderImpl<T> implements PollinatedRegistryBuild
     }
 
     @Override
-    public PollinatedRegistryBuilder<T> dataPackRegistry(Codec<T> codec, @Nullable Codec<T> networkCodec) {
-        // TODO: setup data registration and early classloading
-        return this;
-    }
-
-    @Override
     public PollinatedRegistry<T> build() {
         if (this.save)
             this.parent.attribute(RegistryAttribute.PERSISTED);
