@@ -10,6 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.Set;
@@ -33,12 +34,12 @@ public class WrapperPollinatedRegistry<T> extends PollinatedRegistry<T> {
     }
 
     @Override
-    public <R extends T> Supplier<R> register(String id, Supplier<R> object) {
+    public <R extends T> Value<R> register(String id, Supplier<R> object) {
         return this.parent.register(id, object);
     }
 
     @Override
-    public <R extends T> Supplier<R> registerConditional(String id, Supplier<R> dummy, Supplier<R> object, boolean register) {
+    public <R extends T> Value<R> registerConditional(String id, Supplier<R> dummy, Supplier<R> object, boolean register) {
         return this.parent.registerConditional(id, dummy, object, register);
     }
 
@@ -88,6 +89,11 @@ public class WrapperPollinatedRegistry<T> extends PollinatedRegistry<T> {
     @Override
     public boolean containsKey(ResourceLocation name) {
         return this.parent.containsKey(name);
+    }
+
+    @Override
+    public Collection<Value<T>> getValues() {
+        return this.parent.getValues();
     }
 
     @Override

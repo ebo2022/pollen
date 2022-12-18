@@ -1,32 +1,24 @@
 package gg.moonflower.pollen.api.registry;
 
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Keyable;
-import com.mojang.serialization.Lifecycle;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import gg.moonflower.pollen.api.platform.Platform;
-import net.minecraft.core.DefaultedRegistry;
-import net.minecraft.core.MappedRegistry;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Iterator;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
- * An abstracted registry for wrapping platform-specific registries.
+ * An abstracted registry for wrapping or creating custom platform-specific registries.
  *
  * @param <T> The object type
  * @author Jackson
@@ -42,13 +34,12 @@ public abstract class PollinatedRegistry<T> implements Codec<T>, Keyable, Iterab
     }
 
     /**
-     * Creates an {@link PollinatedRegistry} backed by a platform-specific registry.
-     * <p>Forge users: If there's no ForgeRegistry for the object type, this will return a {@link PollinatedRegistry.VanillaImpl}.
+     * Creates a {@link PollinatedRegistry} that registers to an existing vanilla registry.
      *
      * @param registry The registry to register objects to.
      * @param modId    The mod id to register to.
      * @param <T>      The registry type.
-     * @return A {@link PollinatedRegistry} backed by a platform-specific registry.
+     * @return A {@link PollinatedRegistry} that registers to an existing vanilla registry
      */
     @ExpectPlatform
     public static <T> PollinatedRegistry<T> create(Registry<T> registry, String modId) {
@@ -56,12 +47,13 @@ public abstract class PollinatedRegistry<T> implements Codec<T>, Keyable, Iterab
     }
 
     /**
-     * Creates a {@link PollinatedRegistry} backed by a platform-specific registry. This should only be used to register to another mod's registry.
+     * Creates a {@link PollinatedRegistry} that registers to another mod's custom registry.
+     * <p>Entries added by the parent registry will not be included in the list returned by {@link #getValues()}.
      *
      * @param registry The registry to register objects to.
      * @param modId    The mod id to register to.
      * @param <T>      The registry type.
-     * @return A {@link PollinatedRegistry} backed by a platform-specific registry.
+     * @return A {@link PollinatedRegistry} that registers to another mod's custom registry
      */
     @ExpectPlatform
     public static <T> PollinatedRegistry<T> create(PollinatedRegistry<T> registry, String modId) {
@@ -69,93 +61,30 @@ public abstract class PollinatedRegistry<T> implements Codec<T>, Keyable, Iterab
     }
 
     /**
-     * Creates a {@link PollinatedRegistry} for registering blocks and item blocks. The mod id from the item registry is used as the id for the block registry.
+     * Creates a builder to make a custom pollinated registry that doesn't exist yet.
+     * <p>The parent class of the built registry should implement {@link CustomRegistryBootstrap}.
+     * <p>If you are creating a registry with simple behavior, use {@link #createSimple(ResourceLocation, Object[])} instead.
      *
-     * @param itemRegistry The registry to add items to
-     * @return A specialized block registry that can register items
+     * @param name The name of the registry
+     * @param <T> The object type
+     * @return A new {@link PollinatedRegistryBuilder}
      */
-    public static PollinatedBlockRegistry createBlock(PollinatedRegistry<Item> itemRegistry) {
-        return new PollinatedBlockRegistry(create(Registry.BLOCK, itemRegistry.getModId()), itemRegistry);
+    @SafeVarargs
+    @ExpectPlatform
+    public static <T> PollinatedRegistryBuilder<T> builder(ResourceLocation name, T... typeGetter) {
+        return Platform.error();
     }
 
     /**
-     * Creates a {@link PollinatedRegistry} for registering fluids.
-     *
-     * @param domain The domain of the mod
-     * @return A specialized fluid registry that can fully handle fluids
-     */
-    public static PollinatedFluidRegistry createFluid(String domain) {
-        return new PollinatedFluidRegistry(create(Registry.FLUID, domain));
-    }
-
-    /**
-     * Creates a {@link PollinatedRegistry} for registering entities and Ai. Ai registries are automatically set to use the domain provided.
-     *
-     * @param domain The domain of the mod
-     * @return A specialized entity registry that can also register Ai
-     */
-    public static PollinatedEntityRegistry createEntity(String domain) {
-        return new PollinatedEntityRegistry(create(Registry.ENTITY_TYPE, domain));
-    }
-
-    /**
-     * Creates a {@link PollinatedRegistry} backed by a {@link Registry}.
-     * <p>Users should always use {@link PollinatedRegistry#create(Registry, String)}.
-     * <p>This is for very specific cases where vanilla registries must strictly be used and {@link PollinatedRegistry#create(Registry, String)} can't do what you need.
-     *
-     * @param registry The registry to register objects to.
-     * @param modId    The mod id to register to.
-     * @param <T>      The registry type.
-     * @return A {@link PollinatedRegistry} backed by a {@link Registry}.
-     */
-    public static <T> PollinatedRegistry<T> createVanilla(Registry<T> registry, String modId) {
-        return new VanillaImpl<>(registry, modId);
-    }
-
-    /**
-     * Creates a new simple registry
+     * Creates a simple custom registry.
      *
      * @param registryId The registry {@link ResourceLocation} used as the registry id
      * @param <T>        The type stored in the Registry
-     * @return An instance of FabricRegistryBuilder
-     * @deprecated Use {@link #createSimple(ResourceLocation)} instead. TODO remove in 2.0.0
+     * @return A custom {@link PollinatedRegistry} backed by a platform-specific registry
      */
-    @Deprecated
-    public static <T> PollinatedRegistry<T> createSimple(Class<T> type, ResourceLocation registryId) {
-        return createSimple(registryId);
-    }
-
-    /**
-     * @param registryId The registry {@link ResourceLocation} used as the registry id
-     * @param defaultId  The default registry id
-     * @param <T>        The type stored in the Registry
-     * @return An instance of FabricRegistryBuilder
-     * @deprecated Use {@link #createDefaulted(ResourceLocation, ResourceLocation)} instead. TODO remove in 2.0.0
-     */
-    @Deprecated
-    public static <T> PollinatedRegistry<T> createDefaulted(Class<T> type, ResourceLocation registryId, ResourceLocation defaultId) {
-        return createDefaulted(registryId, defaultId);
-    }
-
-    /**
-     * Creates a new simple registry
-     *
-     * @param registryId The registry {@link ResourceLocation} used as the registry id
-     * @param <T>        The type stored in the Registry
-     * @return An instance of FabricRegistryBuilder
-     */
-    public static <T> PollinatedRegistry<T> createSimple(ResourceLocation registryId) {
-        return createVanilla(new MappedRegistry<>(ResourceKey.createRegistryKey(registryId), Lifecycle.stable(), null), registryId.getNamespace());
-    }
-
-    /**
-     * @param registryId The registry {@link ResourceLocation} used as the registry id
-     * @param defaultId  The default registry id
-     * @param <T>        The type stored in the Registry
-     * @return An instance of FabricRegistryBuilder
-     */
-    public static <T> PollinatedRegistry<T> createDefaulted(ResourceLocation registryId, ResourceLocation defaultId) {
-        return createVanilla(new DefaultedRegistry<>(defaultId.toString(), ResourceKey.createRegistryKey(registryId), Lifecycle.stable(), null), registryId.getNamespace());
+    @SafeVarargs
+    public static <T> PollinatedRegistry<T> createSimple(ResourceLocation registryId, T... typeGetter) {
+        return builder(registryId, typeGetter).build();
     }
 
     /**
@@ -173,7 +102,7 @@ public abstract class PollinatedRegistry<T> implements Codec<T>, Keyable, Iterab
      * @param <R>    The registry type.
      * @return The registered object in a {@link Supplier}.
      */
-    public abstract <R extends T> Supplier<R> register(String id, Supplier<R> object);
+    public abstract <R extends T> Value<R> register(String id, Supplier<R> object);
 
     /**
      * Registers an object or a dummy object based on a condition.
@@ -185,7 +114,7 @@ public abstract class PollinatedRegistry<T> implements Codec<T>, Keyable, Iterab
      * @param <R>      The registry type.
      * @return The registered object in a {@link Supplier}
      */
-    public <R extends T> Supplier<R> registerConditional(String id, Supplier<R> dummy, Supplier<R> object, boolean register) {
+    public <R extends T> Value<R> registerConditional(String id, Supplier<R> dummy, Supplier<R> object, boolean register) {
         return this.register(id, register ? object : dummy);
     }
 
@@ -199,7 +128,7 @@ public abstract class PollinatedRegistry<T> implements Codec<T>, Keyable, Iterab
     public abstract ResourceLocation getKey(T value);
 
     /**
-     * Retrieves the id for the specified value. This can only be used for a custom registry.
+     * Retrieves the id for the specified value.
      *
      * @param value The value to get the id for
      * @return An id for that value or <code>null</code> if this registry doesn't contain that id
@@ -216,7 +145,7 @@ public abstract class PollinatedRegistry<T> implements Codec<T>, Keyable, Iterab
     public abstract T get(@Nullable ResourceLocation name);
 
     /**
-     * Retrieves the value for the specified id. This can only be used for a custom registry.
+     * Retrieves the value for the specified id.
      *
      * @param id The id to get the value for
      * @return A value for that id or <code>null</code> if this registry doesn't contain a value with that id
@@ -270,6 +199,11 @@ public abstract class PollinatedRegistry<T> implements Codec<T>, Keyable, Iterab
     public abstract boolean containsKey(ResourceLocation name);
 
     /**
+     * @return The set of registry values that were added by this registry
+     */
+    public abstract Collection<Value<T>> getValues();
+
+    /**
      * Initializes the registry for a {@link Platform}.
      *
      * @param mod The {@link Platform} to register the registry onto.
@@ -286,85 +220,52 @@ public abstract class PollinatedRegistry<T> implements Codec<T>, Keyable, Iterab
     protected void onRegister(Platform mod) {
     }
 
-    @ApiStatus.Internal
-    public static class VanillaImpl<T> extends PollinatedRegistry<T> {
+    /**
+     * A wrapper for querying info on objects registered in a {@link PollinatedRegistry}.
+     *
+     * @param <T> The object type
+     * @author ebo2022
+     * @since 1.6.0
+     */
+    public interface Value<T> extends Supplier<T> {
 
-        private final Registry<T> registry;
-        private final Codec<T> codec;
-
-        private VanillaImpl(Registry<T> registry, String modId) {
-            super(modId);
-            this.registry = registry;
-            this.codec = this.registry.byNameCodec();
-        }
-
-        public Registry<T> getRegistry() {
-            return registry;
-        }
-
+        /**
+         * @return The wrapped object from the parent registry
+         */
         @Override
-        public <R extends T> Supplier<R> register(String id, Supplier<R> object) {
-            R registered = Registry.register(this.registry, new ResourceLocation(this.modId, id), object.get());
-            return () -> registered;
+        T get();
+
+        default Optional<T> getOptional() {
+            return this.isPresent() ? Optional.of(this.get()) : Optional.empty();
         }
 
-        @Nullable
-        @Override
-        public ResourceLocation getKey(T value) {
-            return this.registry.getKey(value);
+        /**
+         * @return An optional vanilla {@link Holder} pointing to the held value to be used for vanilla compatibility
+         */
+        Optional<Holder<T>> getHolder();
+
+        /**
+         * @return Whether the held value is present
+         */
+        boolean isPresent();
+
+        default void ifPresent(Consumer<? super T> consumer) {
+            if (isPresent())
+                consumer.accept(get());
         }
 
-        @Override
-        public int getId(@Nullable T value) {
-            return this.registry.getId(value);
-        }
+        /**
+         * @return The name of the registered object
+         */
+        ResourceLocation getId();
 
-        @Nullable
-        @Override
-        public T get(@Nullable ResourceLocation name) {
-            return this.registry.get(name);
-        }
+        /**
+         * @return A {@link ResourceKey} pointing to the registered object
+         */
+        ResourceKey<T> getKey();
 
-        @Nullable
-        @Override
-        public T byId(int id) {
-            return this.registry.byId(id);
-        }
-
-        @Override
-        public ResourceKey<? extends Registry<T>> key() {
-            return this.registry.key();
-        }
-
-        @Override
-        public Set<ResourceLocation> keySet() {
-            return this.registry.keySet();
-        }
-
-        @Override
-        public boolean containsKey(ResourceLocation name) {
-            return this.registry.containsKey(name);
-        }
-
-        @Override
-        public <T1> DataResult<Pair<T, T1>> decode(DynamicOps<T1> ops, T1 input) {
-            return this.codec.decode(ops, input);
-        }
-
-        @Override
-        public <T1> DataResult<T1> encode(T input, DynamicOps<T1> ops, T1 prefix) {
-            return this.codec.encode(input, ops, prefix);
-        }
-
-        @Override
-        public <T1> Stream<T1> keys(DynamicOps<T1> ops) {
-            return this.registry.keys(ops);
-        }
-
-        @NotNull
-        @Override
-        public Iterator<T> iterator() {
-            return this.registry.iterator();
+        default Stream<T> stream() {
+            return isPresent() ? Stream.of(get()) : Stream.of();
         }
     }
 }
