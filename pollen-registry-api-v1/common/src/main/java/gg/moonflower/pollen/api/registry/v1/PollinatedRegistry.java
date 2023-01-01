@@ -14,6 +14,8 @@ import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -55,36 +57,6 @@ public interface PollinatedRegistry<T> extends Codec<T>, Keyable, Iterable<T> {
     }
 
     /**
-     * Creates a {@link PollinatedRegistry} for registering blocks and item blocks. The mod id from the item registry is used as the id for the block registry.
-     *
-     * @param itemRegistry The registry to add items to
-     * @return A specialized block registry that can register items
-     */
-    static PollinatedBlockRegistry createBlock(PollinatedRegistry<Item> itemRegistry) {
-        return new PollinatedBlockRegistry(create(Registry.BLOCK, itemRegistry.getModId()), itemRegistry);
-    }
-
-    /**
-     * Creates a {@link PollinatedRegistry} for registering fluids.
-     *
-     * @param domain The domain of the mod
-     * @return A specialized fluid registry that can fully handle fluids
-     */
-    static PollinatedFluidRegistry createFluid(String domain) {
-        return new PollinatedFluidRegistry(create(Registry.FLUID, domain));
-    }
-
-    /**
-     * Creates a {@link PollinatedRegistry} for registering entities and Ai. Ai registries are automatically set to use the domain provided.
-     *
-     * @param domain The domain of the mod
-     * @return A specialized entity registry that can also register Ai
-     */
-    static PollinatedEntityRegistry createEntity(String domain) {
-        return new PollinatedEntityRegistry(create(Registry.ENTITY_TYPE, domain));
-    }
-
-    /**
      * Creates a {@link PollinatedRegistry} backed by a {@link Registry}.
      * <p>Users should always use {@link PollinatedRegistry#create(Registry, String)}.
      * <p>This is for very specific cases where vanilla registries must strictly be used and {@link PollinatedRegistry#create(Registry, String)} can't do what you need.
@@ -99,24 +71,33 @@ public interface PollinatedRegistry<T> extends Codec<T>, Keyable, Iterable<T> {
     }
 
     /**
-     * Creates a new simple registry
+     * Creates a {@link PollinatedRegistry} for registering blocks and item blocks. The mod id from the item registry is used as the id for the block registry.
      *
-     * @param registryId The registry {@link ResourceLocation} used as the registry id
-     * @param <T>        The type stored in the Registry
-     * @return An instance of FabricRegistryBuilder
+     * @param itemRegistry The registry to add items to
+     * @return A specialized block registry that can register items
      */
-    static <T> PollinatedRegistry<T> createSimple(ResourceLocation registryId) {
-        return createVanilla(new MappedRegistry<>(ResourceKey.createRegistryKey(registryId), Lifecycle.stable(), null), registryId.getNamespace());
+    static PollinatedBlockRegistry createBlock(PollinatedRegistry<Item> itemRegistry) {
+        return new PollinatedBlockRegistry(PollinatedRegistry.create(Registry.BLOCK, itemRegistry.getModId()), itemRegistry);
     }
 
     /**
-     * @param registryId The registry {@link ResourceLocation} used as the registry id
-     * @param defaultId  The default registry id
-     * @param <T>        The type stored in the Registry
-     * @return An instance of FabricRegistryBuilder
+     * Creates a {@link PollinatedRegistry} for registering fluids.
+     *
+     * @param domain The domain of the mod
+     * @return A specialized fluid registry that can fully handle fluids
      */
-    static <T> PollinatedRegistry<T> createDefaulted(ResourceLocation registryId, ResourceLocation defaultId) {
-        return createVanilla(new DefaultedRegistry<>(defaultId.toString(), ResourceKey.createRegistryKey(registryId), Lifecycle.stable(), null), registryId.getNamespace());
+    static PollinatedFluidRegistry createFluid(String domain) {
+        return new PollinatedFluidRegistry(PollinatedRegistry.create(Registry.FLUID, domain));
+    }
+
+    /**
+     * Creates a {@link PollinatedRegistry} for registering entities and Ai. Ai registries are automatically set to use the domain provided.
+     *
+     * @param domain The domain of the mod
+     * @return A specialized entity registry that can also register Ai
+     */
+    static PollinatedEntityRegistry createEntity(String domain) {
+        return new PollinatedEntityRegistry(PollinatedRegistry.create(Registry.ENTITY_TYPE, domain));
     }
 
     /**
@@ -132,7 +113,7 @@ public interface PollinatedRegistry<T> extends Codec<T>, Keyable, Iterable<T> {
      * @param <R>    The registry type.
      * @return The registered object in a {@link Supplier}.
      */
-    <R extends T> Supplier<R> register(String id, Supplier<R> object);
+    <R extends T> RegistryValue<R> register(String id, Supplier<R> object);
 
     /**
      * Registers an object or a dummy object based on a condition.
@@ -144,7 +125,7 @@ public interface PollinatedRegistry<T> extends Codec<T>, Keyable, Iterable<T> {
      * @param <R>      The registry type.
      * @return The registered object in a {@link Supplier}
      */
-    default  <R extends T> Supplier<R> registerConditional(String id, Supplier<R> dummy, Supplier<R> object, boolean register) {
+    default  <R extends T> RegistryValue<R> registerConditional(String id, Supplier<R> dummy, Supplier<R> object, boolean register) {
         return this.register(id, register ? object : dummy);
     }
 
@@ -227,6 +208,11 @@ public interface PollinatedRegistry<T> extends Codec<T>, Keyable, Iterable<T> {
      * @return Whether that value exists
      */
     boolean containsKey(ResourceLocation name);
+
+    /**
+     * @return A set of all values added by this registry
+     */
+    Collection<RegistryValue<T>> entries();
 
     /**
      * Initializes the registry for a {@link Platform}.

@@ -11,6 +11,5 @@ import net.minecraft.resources.ResourceLocation;
  */
 public interface PollenRegistries {
 
-    PollinatedRegistry<PollinatedBoatType> BOAT_TYPE_REGISTRY = PollinatedRegistry.createSimple(new ResourceLocation(PollenRegistryApiInitializer.MOD_ID, "boat_type"));
-
+    PollinatedRegistry<PollinatedBoatType> BOAT_TYPE_REGISTRY = ExtendedPollinatedRegistries.createSimple(new ResourceLocation(PollenRegistryApiInitializer.MOD_ID, "boat_type"));
 }

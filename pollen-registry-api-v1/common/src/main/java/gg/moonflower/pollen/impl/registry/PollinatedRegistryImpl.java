@@ -4,10 +4,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.*;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import gg.moonflower.pollen.api.base.platform.Platform;
-import gg.moonflower.pollen.api.registry.v1.PollinatedBlockRegistry;
-import gg.moonflower.pollen.api.registry.v1.PollinatedEntityRegistry;
-import gg.moonflower.pollen.api.registry.v1.PollinatedFluidRegistry;
-import gg.moonflower.pollen.api.registry.v1.PollinatedRegistry;
+import gg.moonflower.pollen.api.registry.v1.*;
 import net.minecraft.core.DefaultedRegistry;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
@@ -18,9 +15,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Iterator;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -36,12 +31,12 @@ public abstract class PollinatedRegistryImpl<T> implements PollinatedRegistry<T>
     }
 
     @ExpectPlatform
-    public static <T> PollinatedRegistryImpl<T> create(Registry<T> registry, String modId) {
+    public static <T> PollinatedRegistry<T> create(Registry<T> registry, String modId) {
         return Platform.error();
     }
 
     @ExpectPlatform
-    public static <T> PollinatedRegistryImpl<T> create(PollinatedRegistry<T> registry, String modId) {
+    public static <T> PollinatedRegistry<T> create(PollinatedRegistry<T> registry, String modId) {
         return Platform.error();
     }
 
@@ -50,12 +45,6 @@ public abstract class PollinatedRegistryImpl<T> implements PollinatedRegistry<T>
         return modId;
     }
 
-    /**
-     * Initializes the registry for a {@link Platform}.
-     *
-     * @param mod The {@link Platform} to register the registry onto.
-     * @throws IllegalStateException if the registry has already been registered.
-     */
     @Override
     public final void register(Platform mod) {
         if (this.registered)
@@ -69,6 +58,8 @@ public abstract class PollinatedRegistryImpl<T> implements PollinatedRegistry<T>
 
         private final Registry<T> registry;
         private final Codec<T> codec;
+        private final Set<RegistryValue<T>> entries = new HashSet<>();
+        private final Set<RegistryValue<T>> entriesView = Collections.unmodifiableSet(entries);
 
         public VanillaImpl(Registry<T> registry, String modId) {
             super(modId);
@@ -81,9 +72,9 @@ public abstract class PollinatedRegistryImpl<T> implements PollinatedRegistry<T>
         }
 
         @Override
-        public <R extends T> Supplier<R> register(String id, Supplier<R> object) {
-            R registered = Registry.register(this.registry, new ResourceLocation(this.modId, id), object.get());
-            return () -> registered;
+        public <R extends T> RegistryValue<R> register(String id, Supplier<R> object) {
+            ResourceLocation name = new ResourceLocation(this.modId, id);
+            return new VanillaRegistryValue<>(Registry.register(this.registry, name, object.get()), this.registry, name);
         }
 
         @Nullable
@@ -122,6 +113,11 @@ public abstract class PollinatedRegistryImpl<T> implements PollinatedRegistry<T>
         @Override
         public boolean containsKey(ResourceLocation name) {
             return this.registry.containsKey(name);
+        }
+
+        @Override
+        public Collection<RegistryValue<T>> entries() {
+            return this.entriesView;
         }
 
         @Override
