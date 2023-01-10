@@ -23,6 +23,7 @@
     "ForgeInternalHandlerMixin",
     "HandshakeHandlerMixin",
     "LivingEntityMixin",
+    "MobSpawnSettingsBuilderAccessor",
     "PackRepositoryAccessor",
     "PackRepositoryMixin",
     "data.AdvancementBuilderMixin",
