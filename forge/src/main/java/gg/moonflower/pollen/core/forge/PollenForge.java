@@ -1,5 +1,6 @@
 package gg.moonflower.pollen.core.forge;
 
+import gg.moonflower.pollen.api.biome.modifier.ForgeBiomeModifierSetup;
 import gg.moonflower.pollen.api.event.events.client.render.AddRenderLayersEvent;
 import gg.moonflower.pollen.api.event.events.client.render.InitRendererEvent;
 import gg.moonflower.pollen.api.event.events.registry.client.ParticleFactoryRegistryEvent;
@@ -43,6 +44,7 @@ public class PollenForge {
         Pollen.PLATFORM.setup();
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         modBus.addListener(PollenForge::init);
+        modBus.addListener(ForgeBiomeModifierSetup::register);
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
             modBus.addListener(EventPriority.NORMAL, true, RegisterColorHandlersEvent.Block.class, event -> InitRendererEvent.EVENT.invoker().initRenderer());
             modBus.addListener(PollenForge::registerParticles);
