@@ -14,18 +14,15 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
-public record BiomeListSelector(List<ResourceLocation> biomes) implements BiomeSelector {
+public record BiomeListSelector(HolderSet<Biome> biomes) implements BiomeSelector {
 
     public static final Codec<BiomeListSelector> CODEC = RecordCodecBuilder.create(builder -> builder.group(
-            new EitherCodec<>(ResourceLocation.CODEC.listOf(), ResourceLocation.CODEC).xmap(
-                    either -> either.map(Function.identity(), List::of), // convert list/singleton to list when decoding
-                    list -> list.size() == 1 ? Either.right(list.get(0)) : Either.left(list) // convert list to singleton/list when encoding
-            ).fieldOf("biomes").forGetter(BiomeListSelector::biomes)
+           Biome.LIST_CODEC.fieldOf("biomes").forGetter(BiomeListSelector::biomes)
     ).apply(builder, BiomeListSelector::new));
 
     @Override
     public boolean test(Context context) {
-        return this.biomes.contains(context.getBiomeKey());
+        return this.biomes.contains(context.getBiome());
     }
 
     @Override

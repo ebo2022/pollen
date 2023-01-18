@@ -1,8 +1,10 @@
 package gg.moonflower.pollen.api.biome.modifier.selector;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.feature.ConfiguredStructureFeature;
 
@@ -43,7 +45,12 @@ public interface BiomeSelector extends Predicate<BiomeSelector.Context> {
         /**
          * @return The key of the current biome
          */
-        ResourceLocation getBiomeKey();
+        ResourceKey<Biome> getBiomeKey();
+
+        /**
+         * @return The current biome
+         */
+        Holder<Biome> getBiome();
 
         /**
          * Checks if the specified structure can generate in the current biome.

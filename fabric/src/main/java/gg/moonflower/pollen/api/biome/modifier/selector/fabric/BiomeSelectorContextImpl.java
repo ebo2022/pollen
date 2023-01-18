@@ -2,8 +2,10 @@ package gg.moonflower.pollen.api.biome.modifier.selector.fabric;
 
 import gg.moonflower.pollen.api.biome.modifier.selector.BiomeSelector;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectionContext;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.feature.ConfiguredStructureFeature;
 import org.jetbrains.annotations.ApiStatus;
@@ -18,8 +20,13 @@ public class BiomeSelectorContextImpl implements BiomeSelector.Context {
     }
 
     @Override
-    public ResourceLocation getBiomeKey() {
-        return this.parent.getBiomeKey().location();
+    public ResourceKey<Biome> getBiomeKey() {
+        return this.parent.getBiomeKey();
+    }
+
+    @Override
+    public Holder<Biome> getBiome() {
+        return this.parent.getBiomeRegistryEntry();
     }
 
     @Override
