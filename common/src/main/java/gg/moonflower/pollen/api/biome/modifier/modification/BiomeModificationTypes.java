@@ -2,6 +2,7 @@ package gg.moonflower.pollen.api.biome.modifier.modification;
 
 import com.mojang.serialization.Codec;
 import gg.moonflower.pollen.api.registry.PollinatedRegistry;
+import gg.moonflower.pollen.api.registry.RegistryValue;
 import gg.moonflower.pollen.core.Pollen;
 import net.minecraft.resources.ResourceLocation;
 

@@ -15,6 +15,7 @@
   ],
   "mixins": [
     "AxeItemMixin",
+    "BiomeSpecialEffectsAccessor",
     "EntityMixin",
     "FireBlockAccessor",
     "FluidMixin",
@@ -23,6 +24,7 @@
     "ForgeInternalHandlerMixin",
     "HandshakeHandlerMixin",
     "LivingEntityMixin",
+    "MobSpawnSettingsBuilderAccessor",
     "PackRepositoryAccessor",
     "PackRepositoryMixin",
     "ShovelItemMixin",

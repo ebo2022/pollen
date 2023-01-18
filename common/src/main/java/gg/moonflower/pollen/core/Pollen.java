@@ -1,5 +1,6 @@
 package gg.moonflower.pollen.core;
 
+import gg.moonflower.pollen.api.biome.modifier.BiomeModifierManager;
 import gg.moonflower.pollen.api.command.PollenSuggestionProviders;
 import gg.moonflower.pollen.api.command.argument.ColorArgumentType;
 import gg.moonflower.pollen.api.command.argument.EnumArgument;
@@ -86,6 +87,7 @@ public class Pollen {
     }
 
     private static void onCommon() {
+        BiomeModifierManager.init();
         PollenSuggestionProviders.init();
         SyncedDataManager.init();
         ResourceModifierManager.init();

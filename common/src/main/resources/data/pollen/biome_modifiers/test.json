@@ -1,0 +1,14 @@
+{
+  "selectors": [
+    {
+      "type": "pollen:biomes",
+      "biomes": ["minecraft:plains", "minecraft:forest"]
+    }
+  ],
+  "modifiers": [
+    {
+      "type": "pollen:test",
+      "thing": "pollen:thing"
+    }
+  ]
+}

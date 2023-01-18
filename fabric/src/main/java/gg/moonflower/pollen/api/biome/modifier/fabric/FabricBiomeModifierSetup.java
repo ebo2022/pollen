@@ -22,13 +22,10 @@ public final class FabricBiomeModifierSetup {
         BiomeModifierManager.entrySet().forEach(entry -> {
             BiomeModification fabricModification = BiomeModifications.create(entry.getKey());
             Predicate<BiomeSelectionContext> sharedSelector = context -> entry.getValue().biomeSelectionMode().test(entry.getValue().selectors(), new BiomeSelectorContextImpl(context));
-            entry.getValue().modifications().forEach(modification -> {
-                for (ModifierApplicationPhase phase : ModifierApplicationPhase.values()) {
-                    if (phase == modification.getApplicationPhase()) {
-                        fabricModification.add(wrapPhase(phase), sharedSelector, ctx -> modification.accept(new PollinatedBiomeInfoImpl(ctx)));
-                    }
-                }
-            });
+            for (ModifierApplicationPhase phase : ModifierApplicationPhase.values()) {
+                ModificationPhase fabricPhase = wrapPhase(phase);
+                entry.getValue().getModificationsByPhase(phase).forEach(biomeModification -> fabricModification.add(fabricPhase, sharedSelector, ctx -> biomeModification.accept(new PollinatedBiomeInfoImpl(ctx))));
+            }
         });
     }
 
