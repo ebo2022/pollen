@@ -14,14 +14,12 @@ public final class ReloadListenerKeys {
     private ReloadListenerKeys() {
     }
 
-    // client
     public static final ResourceLocation SOUNDS = new ResourceLocation("minecraft:sounds");
     public static final ResourceLocation FONTS = new ResourceLocation("minecraft:fonts");
     public static final ResourceLocation MODELS = new ResourceLocation("minecraft:models");
     public static final ResourceLocation LANGUAGES = new ResourceLocation("minecraft:languages");
     public static final ResourceLocation TEXTURES = new ResourceLocation("minecraft:textures");
 
-    // server
     public static final ResourceLocation TAGS = new ResourceLocation("minecraft:tags");
     public static final ResourceLocation RECIPES = new ResourceLocation("minecraft:recipes");
     public static final ResourceLocation ADVANCEMENTS = new ResourceLocation("minecraft:advancements");

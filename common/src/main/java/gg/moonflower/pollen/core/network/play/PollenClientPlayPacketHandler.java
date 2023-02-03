@@ -12,4 +12,6 @@ public interface PollenClientPlayPacketHandler {
     void handleSyncAnimationPacket(ClientboundSyncAnimationPacket msg, PollinatedPacketContext ctx);
 
     void handleUpdateSettingsPacket(ClientboundUpdateSettingsPacket msg, PollinatedPacketContext ctx);
+
+    void handleSyncRegistryAttachmentPacket(ClientboundSyncRegistryAttachmentPacket msg, PollinatedPacketContext ctx);
 }

@@ -70,6 +70,15 @@ public abstract class Platform {
     }
 
     /**
+     * Used to block access to client data if the environment is a server.
+     * @throws IllegalStateException if the current environment is not a client
+     */
+    public static void assertClientAccess() {
+        if (!isClient())
+            throw new IllegalStateException("Illegal access to client-only data");
+    }
+
+    /**
      * @return Whether Optifine is breaking the game
      */
     @ExpectPlatform

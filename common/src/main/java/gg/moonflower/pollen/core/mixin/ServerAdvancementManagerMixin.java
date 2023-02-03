@@ -1,6 +1,7 @@
 package gg.moonflower.pollen.core.mixin;
 
 import gg.moonflower.pollen.api.registry.resource.PollinatedPreparableReloadListener;
+import gg.moonflower.pollen.api.registry.resource.ReloadListenerKeys;
 import gg.moonflower.pollen.core.Pollen;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ServerAdvancementManager;
@@ -14,13 +15,11 @@ import java.util.Collections;
 public abstract class ServerAdvancementManagerMixin implements PollinatedPreparableReloadListener {
 
     @Unique
-    private static final ResourceLocation POLLEN_ID = new ResourceLocation("server_advancement_manager");
-    @Unique
     private static final Collection<ResourceLocation> POLLEN_DEPENDENCIES = Collections.singleton(new ResourceLocation(Pollen.MOD_ID, "advancement_modifiers"));
 
     @Override
     public ResourceLocation getPollenId() {
-        return POLLEN_ID;
+        return ReloadListenerKeys.ADVANCEMENTS;
     }
 
     @Override

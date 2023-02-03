@@ -3,6 +3,7 @@ package gg.moonflower.pollen.core.network;
 import gg.moonflower.pollen.api.network.packet.PollinatedPacketContext;
 import gg.moonflower.pollen.core.client.entitlement.EntitlementManager;
 import gg.moonflower.pollen.core.network.play.ClientboundSyncAnimationPacket;
+import gg.moonflower.pollen.core.network.play.ClientboundSyncRegistryAttachmentPacket;
 import gg.moonflower.pollen.core.network.play.ClientboundUpdateSettingsPacket;
 import gg.moonflower.pollen.core.network.play.PollenClientPlayPacketHandler;
 import gg.moonflower.pollen.pinwheel.api.common.animation.AnimatedEntity;
@@ -68,5 +69,10 @@ public class PollenClientPlayPacketHandlerImpl implements PollenClientPlayPacket
 
             EntitlementManager.updateEntitlementSettings(msg.getPlayer(), msg.getEntitlement(), entitlement -> entitlement.updateSettings(msg.getSettings()));
         });
+    }
+
+    @Override
+    public void handleSyncRegistryAttachmentPacket(ClientboundSyncRegistryAttachmentPacket msg, PollinatedPacketContext ctx) {
+
     }
 }

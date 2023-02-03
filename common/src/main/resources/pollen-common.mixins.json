@@ -36,6 +36,7 @@
     "GrindstoneMenuResultSlotMixin",
     "LivingEntityMixin",
     "PotionBrewingMixin",
+    "ResourceKeyMixin",
     "ServerAdvancementManagerMixin",
     "ServerPlayerMixin",
     "ServerResourcesMixin",
