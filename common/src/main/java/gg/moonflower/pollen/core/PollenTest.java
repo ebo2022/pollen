@@ -16,8 +16,10 @@ import gg.moonflower.pollen.api.platform.Platform;
 import gg.moonflower.pollen.api.registry.*;
 import gg.moonflower.pollen.api.registry.content.*;
 import gg.moonflower.pollen.api.registry.resource.TagRegistry;
+import gg.moonflower.pollen.api.util.PollinatedModContainer;
 import gg.moonflower.pollen.core.client.render.DebugPollenFlowerPotRenderer;
 import gg.moonflower.pollen.core.datagen.TestBlockLootGenerator;
+import gg.moonflower.pollen.core.datagen.TestSurfaceRuleProvider;
 import gg.moonflower.pollen.core.test.TestFluid;
 import gg.moonflower.pollen.core.test.TestPollenFluidBehavior;
 import gg.moonflower.pollen.core.test.TestServerConfig;
@@ -115,9 +117,11 @@ public class PollenTest {
 
     static void onData(Platform.DataSetupContext context) {
         DataGenerator generator = context.getGenerator();
+        PollinatedModContainer modContainer = context.getMod();
         generator.addProvider(new PollinatedLootTableProvider(generator).add(
                 LootContextParamSets.CHEST, new TestBlockLootGenerator()
         ));
+        generator.addProvider(new TestSurfaceRuleProvider(generator, modContainer));
     }
 
     private static <T> T create(Supplier<T> factory) {
