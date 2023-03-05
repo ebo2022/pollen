@@ -10,9 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Iterator;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -33,12 +31,12 @@ public class WrapperPollinatedRegistry<T> extends PollinatedRegistry<T> {
     }
 
     @Override
-    public <R extends T> RegistryValue<R> register(String id, Supplier<R> object) {
+    public <R extends T> RegistryValue<R> register(String id, Supplier<? extends R> object) {
         return this.parent.register(id, object);
     }
 
     @Override
-    public <R extends T> RegistryValue<R> registerConditional(String id, Supplier<R> dummy, Supplier<R> object, boolean register) {
+    public <R extends T> RegistryValue<R> registerConditional(String id, Supplier<? extends R> dummy, Supplier<? extends R> object, boolean register) {
         return this.parent.registerConditional(id, dummy, object, register);
     }
 
@@ -76,8 +74,18 @@ public class WrapperPollinatedRegistry<T> extends PollinatedRegistry<T> {
     }
 
     @Override
+    public int size() {
+        return this.parent.size();
+    }
+
+    @Override
     public Set<ResourceLocation> keySet() {
         return this.parent.keySet();
+    }
+
+    @Override
+    public Set<Map.Entry<ResourceKey<T>, T>> entrySet() {
+        return null;
     }
 
     @Override
@@ -88,6 +96,11 @@ public class WrapperPollinatedRegistry<T> extends PollinatedRegistry<T> {
     @Override
     public boolean containsKey(ResourceLocation name) {
         return this.parent.containsKey(name);
+    }
+
+    @Override
+    public Collection<RegistryValue<T>> getModEntries() {
+        return this.parent.getModEntries();
     }
 
     @Override
